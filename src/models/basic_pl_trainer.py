@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytorch_lightning as pl
 
-from src.configuration.med_dialog.config_args import parse_args_for_config
+from src.configuration.tongue_twister.config_args import parse_args_for_config
 from src.utils.wrapper import print_done
 from src.utils.string_utils import are_same_strings
 from src.models.basic_trainer import BasicTrainer

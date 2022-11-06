@@ -25,13 +25,12 @@ from src.configuration.pl_argsparser import (
     process_parsed_args_for_pl_trainer,
 )
 
-EXPERIMENT_GROUP = "med-dialog"
-MODEL_NAME = "terms_bart"
+EXPERIMENT_GROUP = "tongue_twister"
+MODEL_NAME = "bart"
 OUTPUT_DIR = f'{BASE_DIR}/output/{EXPERIMENT_GROUP}'
 DATASETS_DIR = f'{BASE_DIR}/datasets/{EXPERIMENT_GROUP}'
 RESOURCES_DIR = f'{BASE_DIR}/resources'
-# DATA_NAME = "large-english-dialog-corpus"
-DATA_NAME = "dialog-with-term"
+DATA_NAME = "tt-data"
 MODEL_NAME_OR_PATH = f'facebook/bart-base'
 
 def add_customized_args(parser: argparse.ArgumentParser = None):

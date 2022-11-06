@@ -18,16 +18,16 @@ So if you want to run this code, you must have following preliminaries:
 ### Directly Download Dataset and Resources
 To reproduce our work you need to download following files:
 
-- Processed data (put them to `datasets/med-dialog` directory) [med-dialog](https://www.dropbox.com/s/roewcfiw2u08g5w/med-dialog.zip?dl=0)
+- Processed data (put them to `datasets/tongue_twister` directory) [tongue_twister](https://www.dropbox.com/s/roewcfiw2u08g5w/tongue_twister.zip?dl=0)
 
-- Medicial Terminology List (put it to `resources/med-dialog` directory) [med_term_list.txt](https://www.dropbox.com/s/cpl5mbw2sy73dcn/med_term_list.txt?dl=0)
+- Medicial Terminology List (put it to `resources/tongue_twister` directory) [med_term_list.txt](https://www.dropbox.com/s/cpl5mbw2sy73dcn/med_term_list.txt?dl=0)
 
 ### Preprocess Dataset From Scratch
 
 The raw dialogue corpus is downloaded from the work of [Medical-Dialogue-System](https://github.com/UCSD-AI4H/Medical-Dialogue-System), 
 or you can download it from [here](https://www.dropbox.com/s/bmuoxzi587pz4v3/large-english-dialog-corpus.zip?dl=0).
 
-Put it to `resources/med-dialog` directory.
+Put it to `resources/tongue_twister` directory.
 
 ### Put Files To Correct Destinations 
 
@@ -35,8 +35,8 @@ Unzip these files, and your `datasets` and `resources` should be as follows.
 
 The structure of `datasets`should be like this:
 ```markdown
-├── datasets/med-dialog
-   └── dialog-with-term		# dialogs with term tags
+├── datasets/tongue_twister
+   └── tongue-twister		# dialogs with term tags
           └── `train.source.txt`    
           └── `train.target.txt`       
           └── `val.source.txt` 
@@ -63,7 +63,7 @@ the example of `test.target.txt` (story):
 
 The structure of `datasets` should be like this:
 ```markdown
-├── resources/med-dialog
+├── resources/tongue_twister
    └── large-english-dialog-corpus		# the raw dialogue corpus
           └── `train.source.txt`    
           └── `train.target.txt`       
@@ -91,24 +91,24 @@ As mentioned above.
 Train bart -w terms AL:
 
 ```shell
-python tasks/med-dialog/train.py --model_name terms_bart --experiment_name=term_bart-base-meddialog\
+python tasks/tongue_twister/train.py --model_name terms_bart --experiment_name=term_bart-base-meddialog\
  --learning_rate=2e-5 --train_batch_size=6 --eval_batch_size=6 --model_name_or_path=facebook/bart-base \
  --val_check_interval=0.5 --max_epochs=6 --accum_batches_args=12  --num_sanity_val_steps=1 \
- --save_top_k 3 --eval_beams 2 --data_dir=datasets/med-dialog/dialog-with-term \
+ --save_top_k 3 --eval_beams 2 --data_dir=datasets/tongue_twister/tongue-twister \
  --limit_val_batches=20
 ```
 
 Test bart -w terms AL:
 
 ```shell
-python tasks/med-dialog/test.py\
+python tasks/tongue_twister/test.py\
   --eval_batch_size=32 --model_name_or_path=facebook/bart-base \
-  --output_dir=output/med-dialog/ --model_name terms_bart --experiment_name=term_bart-base-meddialog --eval_beams 2 \
+  --output_dir=output/tongue_twister/ --model_name terms_bart --experiment_name=term_bart-base-meddialog --eval_beams 2 \
   --max_target_length=400
 ```
 
 If you also want to try baselines, please read the code of
-`tasks/med-dialog/train.py` and `tasks/med-dialog/test.py`. I believe you will understand what to do.
+`tasks/tongue_twister/train.py` and `tasks/tongue_twister/test.py`. I believe you will understand what to do.
 
 
 ## Notation

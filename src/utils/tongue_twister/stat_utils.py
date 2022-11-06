@@ -12,7 +12,7 @@ from collections import Counter
 from typing import List
 
 from src.configuration.constants import BASE_DIR
-from src.utils.med_dialog.event_utils import line_to_event_list
+from src.utils.tongue_twister.event_utils import line_to_event_list
 from preprocessing.event_trigger.event_extractor import EventExtractor
 
 

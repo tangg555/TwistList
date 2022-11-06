@@ -30,7 +30,7 @@ from src.modules.datasets_base import BaseDataset
 TERM_TOKEN = "[TERM]"
 SEP_TOKEN = "[SEP]"
 
-class EnglishDialogDataset(BaseDataset):
+class TongueTwisterDataset(BaseDataset):
     def __init__(self, tokenizer,
                  data_dir,
                  max_source_length,
@@ -76,7 +76,7 @@ class EnglishDialogDataset(BaseDataset):
     def __len__(self):
         return len(self.src_data)
 
-class GPT2EnglishDialogDataset(EnglishDialogDataset):
+class GPT2TongueTwisterDataset(TongueTwisterDataset):
     def __init__(self, tokenizer: GPT2Tokenizer,
                  data_dir,
                  max_source_length,
@@ -121,84 +121,3 @@ class GPT2EnglishDialogDataset(EnglishDialogDataset):
         batch_encoding["token_type_ids"] = token_type_ids
         batch_encoding["ids"] = [x["data_id"] for x in batch]
         return batch_encoding
-
-class EnglishDialogDatasetWithTerms(EnglishDialogDataset):
-    def __init__(self, tokenizer: BartTokenizer,
-                 data_dir,
-                 max_source_length,
-                 max_target_length,
-                 src_file_prefix="train",
-                 tgt_file_prefix="train", ):
-        super().__init__(tokenizer, data_dir, max_source_length, max_target_length,
-                         src_file_prefix, tgt_file_prefix)
-
-    def collate_fn(self, batch):
-        """
-        let bart to do classification of whether the word is a term.
-        """
-        batch_encoding = self.tokenizer(
-            [x["src_text"] for x in batch],
-            add_special_tokens=True,
-            truncation=True,
-            padding="longest",
-            max_length=self.max_source_length,
-            return_tensors="pt",
-        ).data
-        with self.tokenizer.as_target_tokenizer():
-            labels = self.tokenizer(
-                [x["tgt_text"] for x in batch],
-                add_special_tokens=True,
-                truncation=True,
-                padding="longest",
-                max_length=self.max_target_length,
-                return_tensors="pt",
-            ).data
-        batch_encoding["labels"] = labels["input_ids"]
-        batch_encoding["ids"] = [x["data_id"] for x in batch]
-
-        # add word labels
-        input_texts = [x["src_text"] for x in batch]
-        batch_encoding["token_labels"] = torch.zeros(batch_encoding["input_ids"].shape)
-        for idx in range(len(input_texts)):
-            sent = input_texts[idx]
-            terms_list = self.get_terms_list(sent)
-            tokenized_tokens = self.tokenizer.tokenize(sent)
-            labels_for_encoded_words = self.get_labels_for_encoded_words(tokenized_tokens, terms_list)
-            assert len(tokenized_tokens) == len(labels_for_encoded_words)
-            if len(labels_for_encoded_words)>batch_encoding['token_labels'].shape[1]:
-                labels_for_encoded_words = labels_for_encoded_words[:batch_encoding['token_labels'].shape[1]]
-            batch_encoding["token_labels"][idx,:len(labels_for_encoded_words)] = torch.tensor(labels_for_encoded_words)
-
-        return batch_encoding
-
-    def are_two_list_equal(self, obj1, obj2):
-        obj1 = list(obj1)
-        obj2 = list(obj2)
-        return obj1 == obj2
-
-    def get_terms_list(self, sent: str):
-        terms_list = []
-        sent_words = sent.strip().split()
-        for idx in range(len(sent_words)):
-            if sent_words[idx] == TERM_TOKEN:
-                terms_list.append(f"{sent_words[idx]} {sent_words[idx+1]}")
-        return terms_list
-
-    def get_labels_for_encoded_words(self, tokenized_tokens: List[str], terms_list):
-        tokenized_terms = []
-        for term in terms_list:
-            tokenized_terms.append(self.tokenizer.tokenize(term))
-        labels_for_encoded_words = [0] * len(tokenized_tokens)
-        for idx in range(len(tokenized_tokens)):
-            # for tokenized_term in tokenized_terms:
-            if len(tokenized_terms) > 0:
-                tokenized_term = tokenized_terms[0]
-                et_len = len(tokenized_term)
-                if self.are_two_list_equal(tokenized_tokens[idx: idx + et_len], tokenized_term):
-                    for temp_id in range(idx, idx+et_len):
-                        labels_for_encoded_words[temp_id] = 1
-                    tokenized_terms.pop(0)
-        assert len(tokenized_terms) == 0
-        return labels_for_encoded_words
-
-

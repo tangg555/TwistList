@@ -19,9 +19,9 @@ FILE_PATH = Path(__file__).absolute()
 BASE_DIR = FILE_PATH.parent.parent.parent
 sys.path.insert(0, str(BASE_DIR))  # run code in any path
 
-from src.configuration.med_dialog.config_args import parse_args_for_config
-from src.models.med_dialog import (
-    MyBart, MyGPT2, MyT5, MyBartWithTermClassification, MyT5WithTermClassification
+from src.configuration.tongue_twister.config_args import parse_args_for_config
+from src.models.tongue_twister import (
+    MyBart, MyGPT2, MyT5
 )
 from src.utils.wrapper import print_done
 from src.utils.string_utils import are_same_strings
@@ -59,10 +59,6 @@ class MedDialogTrainer(BasicPLTrainer):
             self.model: MyGPT2 = MyGPT2(args)
         elif are_same_strings(args.model_name, "t5"):
             self.model: MyT5 = MyT5(args)
-        elif are_same_strings(args.model_name, "terms_bart"):
-            self.model: MyBartWithTermClassification = MyBartWithTermClassification(args)
-        elif are_same_strings(args.model_name, "terms_t5"):
-            self.model: MyT5WithTermClassification = MyT5WithTermClassification(args)
         else:
             raise NotImplementedError(f"args.model_name: {args.model_name}")
 

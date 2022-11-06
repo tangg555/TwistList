@@ -23,12 +23,12 @@ from transformers.models.gpt2.modeling_gpt2 import GPT2LMHeadModel, GPT2Config
 from transformers import GPT2Tokenizer
 
 from src.utils import nlg_eval_utils
-from src.modules.med_dialog.datasets import (
-    GPT2EnglishDialogDataset,
+from src.modules.tongue_twister.datasets import (
+    GPT2TongueTwisterDataset,
 )
-from src.utils.med_dialog import model_utils
+from src.utils.tongue_twister import model_utils
 from src.utils.gen_utils import ids_to_clean_string, top_p_logits
-from src.models.med_dialog.bart import MyBart
+from src.models.tongue_twister.bart import MyBart
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class MyGPT2(MyBart):
                      model=self.model)
         self.model.resize_token_embeddings(new_num_tokens=len(self.tokenizer))
         self.loss_fn = torch.nn.CrossEntropyLoss(ignore_index=self.tokenizer.pad_token_id, reduction="none")
-        self.dataset_class = GPT2EnglishDialogDataset
+        self.dataset_class = GPT2TongueTwisterDataset
 
     def _step(self, batch: dict):
         outputs = self(input_ids=batch["input_ids"],

@@ -17,7 +17,7 @@ FILE_PATH = Path(__file__).absolute()
 BASE_DIR = FILE_PATH.parent.parent.parent
 sys.path.insert(0, str(BASE_DIR))  # run code in any path
 
-from src.configuration.med_dialog.config_args import parse_args_for_config
+from src.configuration.tongue_twister.config_args import parse_args_for_config
 from src.utils.file_utils import copy_file_or_dir, output_obj_to_file, pickle_save, pickle_load
 from src.utils import nlg_eval_utils
 from train import MedDialogTrainer
