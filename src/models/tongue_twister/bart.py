@@ -196,7 +196,7 @@ class MyBart(BaseTransformer):
         self.update_metric_names(base_metrics, update_flag=self.metric_names_update_flag)
         self.metric_names_update_flag = False
         base_metrics.update(batch_gen_time=batch_gen_time, gen_len=gen_len,
-                            preds=preds, targets=targets,source=source)
+                            preds=preds, targets=targets, source=source)
         return base_metrics
 
     def validation_step(self, batch, batch_idx) -> Dict:

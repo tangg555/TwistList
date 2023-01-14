@@ -25,6 +25,7 @@ from src.utils import nlg_eval_utils
 from src.utils.tongue_twister import tt_eval_utils
 from train import TongueTwisterTrainer
 from src.utils.string_utils import rm_extra_spaces
+from src.utils.file_utils import pickle_save, pickle_load
 
 class ChatGPTTester(object):
     def __init__(self, hparams):
@@ -39,6 +40,8 @@ class ChatGPTTester(object):
         self.generation_dir.mkdir(parents=True, exist_ok=True)
         self.cache_dir = self.experiment_output_dir / "cache_dir"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
+        self.cache_path = self.cache_dir.joinpath("chatgpt.pkl")
+        self.cache = self.load_cache()
 
         self.src_data_file = self.data_dir.joinpath("test.source.txt")
         self.tgt_data_file = self.data_dir.joinpath("test.target.txt")
@@ -46,10 +49,13 @@ class ChatGPTTester(object):
         self.tgt_data = self._read_clean_lines(self.tgt_data_file)
 
     def load_cache(self):
-        pass
+        if self.cache_path.exists():
+            return pickle_load(self.cache_path)
+        else:
+            return dict()
 
     def save_cache(self):
-        pass
+        pickle_save(self.cache_path)
 
 
     def _read_clean_lines(self, file_path):
@@ -63,12 +69,14 @@ class ChatGPTTester(object):
 
 
     def generate(self):
+        preds = []
+        targets = []
+        for src_input, tt_target in zip(self.src_data, self.tgt_data):
+            targets.append(tt_target)
+            if
 
-
-        preds = self.test_output["preds"]
-        targets = self.tgt_data
         tgt_lines_toks, pred_lines_toks = \
-            [self.tokenizer.tokenize(t) for t in targets], [self.tokenizer.tokenize(c) for c in preds]
+            [t.strip().split() for t in targets], [p.strip().split() for p in preds]
 
         metrics = {}
         # calculate bleu score
@@ -76,11 +84,11 @@ class ChatGPTTester(object):
         # calculate rouge score
         rouge_metrics = nlg_eval_utils.calculate_rouge(pred_lines=preds, tgt_lines=targets)
         metrics.update(**rouge_metrics)
-        phoneme_metrics = tt_eval_utils.compute_phonemes(keywords=preds, predictions=targets)
+        phoneme_metrics = tt_eval_utils.compute_phonemes(predictions=targets)
         metrics.update(**phoneme_metrics)
         bertscore_metrics = tt_eval_utils.compute_bert_score(predictions=preds, references=targets)
         metrics.update(**bertscore_metrics)
-        gen_len = np.mean(list(map(len, preds)))
+        gen_len = np.mean([len(one.strip().split()) for one in preds])
         metrics["gen_len"] = gen_len
         metrics["ppl"] = round(np.exp(metrics["loss"]), 2)
         key = sorted(metrics.keys())

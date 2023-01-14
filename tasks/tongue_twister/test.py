@@ -104,7 +104,9 @@ class TongueTwisterTester(TongueTwisterTrainer):
         metrics.update(**bertscore_metrics)
         gen_len = np.mean([len(one.strip().split()) for one in preds])
         metrics["gen_len"] = gen_len
-        metrics["ppl"] = round(np.exp(metrics["loss"]), 2)
+        loss = self.test_output["log"]["test_loss"].item() if "test_loss" in self.test_output["log"] \
+            else self.test_output['test_loss'].item()
+        metrics["ppl"] = round(np.exp(loss), 2)
         key = sorted(metrics.keys())
         for k in key:
             print(k, metrics[k])

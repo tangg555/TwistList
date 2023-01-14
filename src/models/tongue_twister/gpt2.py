@@ -29,6 +29,7 @@ from src.modules.tongue_twister.datasets import (
 from src.utils.tongue_twister import model_utils
 from src.utils.gen_utils import ids_to_clean_string, top_p_logits
 from src.models.tongue_twister.bart import MyBart
+from src.utils.tongue_twister import tt_eval_utils
 
 logger = logging.getLogger(__name__)
 
@@ -174,11 +175,17 @@ class MyGPT2(MyBart):
         bleu_metrics: Dict = nlg_eval_utils.calculate_bleu(ref_lines=[self.tokenizer.tokenize(l) for l in targets],
                                                            gen_lines=[self.tokenizer.tokenize(l) for l in preds])
         base_metrics.update(**bleu_metrics)
-        summ_len = np.mean(list(map(len, generated_ids)))
+        phoneme_metrics: Dict = tt_eval_utils.compute_phonemes(predictions=preds)
+        base_metrics.update(**phoneme_metrics)
+        bertscore_metrics: Dict = tt_eval_utils.compute_bert_score(predictions=preds, references=targets)
+        base_metrics.update(**bertscore_metrics)
+        gen_len = np.mean([len(one.strip().split()) for one in preds])
+        base_metrics["gen_len"] = gen_len
+        base_metrics["ppl"] = round(np.exp(base_metrics["loss"]), 2)
 
         # update metric_names
         self.update_metric_names(base_metrics, update_flag=self.metric_names_update_flag)
         self.metric_names_update_flag = False
-        base_metrics.update(batch_gen_time=batch_gen_time, gen_len=summ_len,
+        base_metrics.update(batch_gen_time=batch_gen_time, gen_len=gen_len,
                             preds=preds, targets=targets,source=source)
         return base_metrics
