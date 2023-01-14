@@ -44,7 +44,9 @@ def compute_phonemes(predictions: List, references: List):
         po_ref = set([p for one in ref_phonemes for p in one])
         init_po_count = 0
         po_count = 0
-        for word_phonemes  in pre_phonemes:
+        for word_phonemes in pre_phonemes:
+            if len(word_phonemes) == 0:
+                continue
             if word_phonemes[0] in init_po_ref:
                 init_po_count += 1
             for po in word_phonemes:
@@ -55,14 +57,18 @@ def compute_phonemes(predictions: List, references: List):
         po_count /= len(pre_phonemes)
         record["init_po_count"].append(init_po_count)
         record["po_count"].append(po_count)
-    record["init_po_count_mean"] = np.mean(record["init_po_count"])
-    record["po_count_mean"] = np.mean(record["po_count"])
-    return record
+
+    metric_dict = {"init_po_count": np.mean(record["init_po_count"]),
+            "po_count_mean": np.mean(record["po_count_mean"])}
+    return metric_dict
 
 def compute_bert_score(predictions: List, references: List):
     bertscore = load("bertscore")
     scores = bertscore.compute(predictions=predictions, references=references, lang="en")
-    return scores
+    metric_dict = {"bertscore_precision": np.mean(scores["precision"]),
+                   "bertscore_recall": np.mean(scores["recall"]),
+                   "bertscore_f1": np.mean(scores["f1"]),
+    return metric_dict
 
 def compute_gpt_ppl(sentences: List[str]):
     config: GPT2Config = GPT2Config.from_pretrained("gpt2")

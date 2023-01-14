@@ -4,6 +4,6 @@ transformers==4.21.3
 pytorch_lightning==1.8.2
 pandas
 numpy
-pytorch==1.11.0
 bert_score
-
+g2p_en
+bertopic
