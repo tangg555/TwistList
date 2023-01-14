@@ -60,15 +60,14 @@ class TongueTwisterDataset(BaseDataset):
             max_length=self.max_source_length,
             return_tensors="pt",
         ).data
-        with self.tokenizer.as_target_tokenizer():
-            labels = self.tokenizer(
-                [x["tgt_text"] for x in batch],
-                add_special_tokens=True,
-                truncation=True,
-                padding="longest",
-                max_length=self.max_target_length,
-                return_tensors="pt",
-            ).data
+        labels = self.tokenizer(
+            [x["tgt_text"] for x in batch],
+            add_special_tokens=True,
+            truncation=True,
+            padding="longest",
+            max_length=self.max_target_length,
+            return_tensors="pt",
+        ).data
         batch_encoding["labels"] = labels["input_ids"]
         batch_encoding["ids"] = [x["data_id"] for x in batch]
         return batch_encoding

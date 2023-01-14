@@ -20,6 +20,7 @@ sys.path.insert(0, str(BASE_DIR))  # run code in any path
 from src.configuration.tongue_twister.config_args import parse_args_for_config
 from src.utils.file_utils import copy_file_or_dir, output_obj_to_file, pickle_save, pickle_load
 from src.utils import nlg_eval_utils
+from src.utils.tongue_twister import tt_eval_utils
 from train import MedDialogTrainer
 
 
@@ -89,19 +90,24 @@ class MedDialogTester(MedDialogTrainer):
 
     def eval_output(self):
         self.init_test_output()
-        pred_lines = self.test_output["preds"]
-        tgt_lines = self.test_output["tgts"]
+        preds = self.test_output["preds"]
+        targets = self.test_output["tgts"]
         tgt_lines_toks, pred_lines_toks = \
-            [self.tokenizer.tokenize(t) for t in tgt_lines], [self.tokenizer.tokenize(c) for c in pred_lines]
+            [self.tokenizer.tokenize(t) for t in targets], [self.tokenizer.tokenize(c) for c in preds]
 
         metrics = {}
         # calculate bleu score
         nlg_eval_utils.calculate_bleu(ref_lines=tgt_lines_toks, gen_lines=pred_lines_toks, metrics=metrics)
         # calculate rouge score
-        rouge_metrics = nlg_eval_utils.calculate_rouge(pred_lines=pred_lines, tgt_lines=tgt_lines)
+        rouge_metrics = nlg_eval_utils.calculate_rouge(pred_lines=preds, tgt_lines=targets)
         metrics.update(**rouge_metrics)
-        # calculate repetition and distinction
-        nlg_eval_utils.repetition_distinct_metric(pred_lines_toks, metrics=metrics, repetition_times=2)
+        phoneme_metrics = tt_eval_utils.compute_phonemes(predictions=preds, references=targets)
+        metrics["phoneme_metrics"] = phoneme_metrics
+        bertscore_metrics = tt_eval_utils.compute_bert_score(predictions=preds, references=targets)
+        metrics["bertscore_metrics"] = bertscore_metrics
+        gen_len = np.mean(list(map(len, preds)))
+        metrics["gen_len"] = gen_len
+        metrics["ppl"] = round(np.exp(metrics["loss"]), 2)
         key = sorted(metrics.keys())
         for k in key:
             print(k, metrics[k])

@@ -1,7 +1,9 @@
 rouge
 rouge_score
-transformers==4.21.0
-pytorch_lightning==1.6.0
+transformers==4.21.3
+pytorch_lightning==1.8.2
 pandas
 numpy
 pytorch==1.11.0
+bert_score
+

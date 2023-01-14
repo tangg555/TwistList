@@ -26,11 +26,11 @@ from src.configuration.pl_argsparser import (
 )
 
 EXPERIMENT_GROUP = "tongue_twister"
-MODEL_NAME = "bart"
+MODEL_NAME = "my_bart"
 OUTPUT_DIR = f'{BASE_DIR}/output/{EXPERIMENT_GROUP}'
 DATASETS_DIR = f'{BASE_DIR}/datasets/{EXPERIMENT_GROUP}'
 RESOURCES_DIR = f'{BASE_DIR}/resources'
-DATA_NAME = "tt-data"
+DATA_NAME = "tt-prompt-data"
 MODEL_NAME_OR_PATH = f'facebook/bart-base'
 
 def add_customized_args(parser: argparse.ArgumentParser = None):

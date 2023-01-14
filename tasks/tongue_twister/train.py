@@ -53,11 +53,11 @@ class MedDialogTrainer(BasicPLTrainer):
         # automatically download from huggingface project
         print(f"model_path: {args.model_name_or_path}")
         # ============= bart ===============
-        if are_same_strings(args.model_name, "bart"):
+        if are_same_strings(args.model_name, "my_bart"):
             self.model: MyBart = MyBart(args)
-        elif are_same_strings(args.model_name, "gpt2"):
+        elif are_same_strings(args.model_name, "my_gpt2"):
             self.model: MyGPT2 = MyGPT2(args)
-        elif are_same_strings(args.model_name, "t5"):
+        elif are_same_strings(args.model_name, "my_t5"):
             self.model: MyT5 = MyT5(args)
         else:
             raise NotImplementedError(f"args.model_name: {args.model_name}")

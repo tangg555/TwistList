@@ -23,7 +23,8 @@ from src.utils.file_utils import save_json
 
 # ================================== call_back classes ==================================
 class Seq2SeqLoggingCallback(pl.Callback):
-    def on_batch_end(self, trainer, pl_module):
+    @rank_zero_only
+    def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx):
         lrs = {f"lr_group_{i}": param["lr"] for i, param in enumerate(pl_module.trainer.optimizers[0].param_groups)}
         pl_module.logger.log_metrics(lrs)
 
@@ -90,7 +91,8 @@ class Seq2SeqLoggingCallback(pl.Callback):
 
 
 class LoggingCallback(pl.Callback):
-    def on_batch_end(self, trainer, pl_module):
+    @rank_zero_only
+    def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx):
         lr_scheduler = trainer.lr_schedulers[0]["scheduler"]
         lrs = {f"lr_group_{i}": lr for i, lr in enumerate(lr_scheduler.get_lr())}
         pl_module.logger.log_metrics(lrs)
@@ -116,7 +118,7 @@ class LoggingCallback(pl.Callback):
 
 
 class Seq2SeqCheckpointCallback(pl.callbacks.ModelCheckpoint):
-    available_metrics = ["val_rouge2", "val_bleu", "val_loss"]
+    available_metrics = ["val_rouge2", "val_bleu", "val_loss","val_rouge1"]
 
     def __init__(self, output_dir, experiment_name, monitor="val_loss",
                  save_top_k=1, every_n_val_epochs=1, verbose=False, **kwargs):
@@ -127,6 +129,11 @@ class Seq2SeqCheckpointCallback(pl.callbacks.ModelCheckpoint):
         self.every_n_val_epochs = every_n_val_epochs
         self.verbose = verbose
         self.check_monitor_validity(self.monitor)
+        if self.monitor in ["val_rouge2", "val_bleu", "val_rouge1"]:
+            self.mode = "max"
+        else:
+            self.mode = "min"
+        print(self.monitor,self.mode)
         super(Seq2SeqCheckpointCallback, self).__init__(dirpath=self.output_dir,
                                                         filename=f"{self.experiment_name}" +
                                                                  '-{epoch:02d}-{step}-{' +
@@ -135,7 +142,7 @@ class Seq2SeqCheckpointCallback(pl.callbacks.ModelCheckpoint):
                                                         every_n_epochs=self.every_n_val_epochs,
                                                         verbose=self.verbose,
                                                         monitor=self.monitor,
-                                                        mode="min",
+                                                        mode=self.mode,
                                                         save_top_k=self.save_top_k,
                                                         **kwargs)
 
