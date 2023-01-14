@@ -77,9 +77,6 @@ class TongueTwisterTester(TongueTwisterTrainer):
         print(f"test_loss: {self.test_output['test_loss']}")
         print(f"metrics: {self.test_output['log']}")
 
-        #copy_file_or_dir(self.src_file, self.generation_dir / "test.source.txt")
-        #copy_file_or_dir(self.tgt_file, self.generation_dir / "test.target.txt")
-
         with open(self.gen_file, "w", encoding="utf-8") as fw_out:
             fw_out.write("\n".join(self.test_output["preds"]))
         with open(self.generation_dir / "test.source.txt", "w", encoding="utf-8") as fw_out:
@@ -101,11 +98,11 @@ class TongueTwisterTester(TongueTwisterTrainer):
         # calculate rouge score
         rouge_metrics = nlg_eval_utils.calculate_rouge(pred_lines=preds, tgt_lines=targets)
         metrics.update(**rouge_metrics)
-        phoneme_metrics = tt_eval_utils.compute_phonemes(predictions=preds, references=targets)
+        phoneme_metrics = tt_eval_utils.compute_phonemes(predictions=preds, display=True)
         metrics.update(**phoneme_metrics)
         bertscore_metrics = tt_eval_utils.compute_bert_score(predictions=preds, references=targets)
         metrics.update(**bertscore_metrics)
-        gen_len = np.mean([one.strip().split() for one in preds])
+        gen_len = np.mean([len(one.strip().split()) for one in preds])
         metrics["gen_len"] = gen_len
         metrics["ppl"] = round(np.exp(metrics["loss"]), 2)
         key = sorted(metrics.keys())

@@ -25,8 +25,9 @@ from transformers.models.roberta.modeling_roberta import RobertaForMaskedLM, Rob
 from evaluate import load
 from g2p_en import G2p
 from tqdm import tqdm
+from collections import Counter
 
-def compute_phonemes(predictions: List, references: List, display=False):
+def compute_phonemes(predictions: List, display=False):
     g2p = G2p()
     def parse_text_to_phonemes(text):
         phoneme_list = []
@@ -34,31 +35,25 @@ def compute_phonemes(predictions: List, references: List, display=False):
             phoneme_list.append(g2p(word))
         return phoneme_list
 
-    assert len(predictions) == len(references)
     record = {"init_po_count": [],
               "po_count": []}
 
-    bar = zip(predictions, references) if not display else tqdm(list(zip(predictions, references)), desc="compute_phonemes")
-    for pre_, ref_ in bar:
-        ref_phonemes = parse_text_to_phonemes(ref_)
-        pre_phonemes = parse_text_to_phonemes(pre_)
-        init_po_ref = set([one[0] for one in ref_phonemes])
-        po_ref = set([p for one in ref_phonemes for p in one])
-        init_po_count = 0
-        po_count = 0
-        for word_phonemes in pre_phonemes:
+    bar = predictions if not display else tqdm(predictions, desc="compute_phonemes")
+    for pred in bar:
+        pred_phonemes = parse_text_to_phonemes(pred)
+
+        init_po_counter = Counter()
+        po_count = Counter()
+        word_count =0
+        for word_phonemes in pred_phonemes:
             if len(word_phonemes) == 0:
                 continue
-            if word_phonemes[0] in init_po_ref:
-                init_po_count += 1
+            word_count += 1
+            init_po_counter[word_phonemes[0]] += 1
             for po in word_phonemes:
-                if po in po_ref:
-                    po_count += 1
-            po_count /= len(word_phonemes)
-        init_po_count /= len(pre_phonemes)
-        po_count /= len(pre_phonemes)
-        record["init_po_count"].append(init_po_count)
-        record["po_count"].append(po_count)
+                po_count[po] += 1
+        record["init_po_count"].append(init_po_counter.most_common(1)[0][1]/word_count)
+        record["po_count"].append(po_count.most_common(1)[0][1]/word_count)
 
     metric_dict = {"init_po_count": round(np.mean(record["init_po_count"]), 4),
                     "po_count": round(np.mean(record["po_count"]), 2)
@@ -134,6 +129,7 @@ def compute_roberta_ppl(sentences: List[str]):
     return np.mean(sentence_ppl)
 
 if __name__ == '__main__':
+    inputs = ["sells thick socks", "sells thick socks"]
     references = ["Seth at Sainsbury's sells thick socks.", "You cuss, I cuss, we all cuss, for asparagus!"]
     predictions = ["Seth at Sainsbury's sells thicks.", "You cuss, I asparagus!"]
     # gpt2 ppl ----
@@ -146,4 +142,4 @@ if __name__ == '__main__':
     # # bert score ----
     # print(f"bert score: {compute_bert_score(predictions=predictions, references=references)}")
 
-    print(f"compute_phonemes: {compute_phonemes(predictions=predictions, references=references)}")
+    print(f"compute_phonemes: {compute_phonemes(predictions=references)}")

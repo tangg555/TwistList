@@ -184,7 +184,7 @@ class MyBart(BaseTransformer):
         bleu_metrics: Dict = nlg_eval_utils.calculate_bleu(ref_lines=[self.tokenizer.tokenize(l) for l in targets],
                                                            gen_lines=[self.tokenizer.tokenize(l) for l in preds])
         base_metrics.update(**bleu_metrics)
-        phoneme_metrics: Dict = tt_eval_utils.compute_phonemes(predictions=preds, references=targets)
+        phoneme_metrics: Dict = tt_eval_utils.compute_phonemes(predictions=preds)
         base_metrics.update(**phoneme_metrics)
         bertscore_metrics: Dict = tt_eval_utils.compute_bert_score(predictions=preds, references=targets)
         base_metrics.update(**bertscore_metrics)

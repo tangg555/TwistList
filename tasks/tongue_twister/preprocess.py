@@ -73,6 +73,7 @@ def normalize_text(text: str):
 def process_raw_data_with_prompt(data: List[Dict]):
     src_txt_list = []
     tgt_txt_list = []
+    keyword_list = []
     for one in data:
         input_text = one["rake_keywords"]
         src_txt_list.append(f'Generate tongue twisters about key words: {normalize_text(input_text)}\n')
