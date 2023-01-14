@@ -102,9 +102,9 @@ class MedDialogTester(MedDialogTrainer):
         rouge_metrics = nlg_eval_utils.calculate_rouge(pred_lines=preds, tgt_lines=targets)
         metrics.update(**rouge_metrics)
         phoneme_metrics = tt_eval_utils.compute_phonemes(predictions=preds, references=targets)
-        metrics(**phoneme_metrics)
+        metrics.update(**phoneme_metrics)
         bertscore_metrics = tt_eval_utils.compute_bert_score(predictions=preds, references=targets)
-        metrics(**bertscore_metrics)
+        metrics.update(**bertscore_metrics)
         gen_len = np.mean(list(map(len, preds)))
         metrics["gen_len"] = gen_len
         metrics["ppl"] = round(np.exp(metrics["loss"]), 2)

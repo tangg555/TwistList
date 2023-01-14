@@ -1,32 +1,10 @@
 """
 @Desc:
 @Reference:
-- BART shift_tokens_right
-https://huggingface.co/docs/transformers/v4.17.0/en/model_doc/bart#bart
-- Label Smoothing
-https://paperswithcode.com/method/label-smoothing
-- bart models from huggingface
-e.g. https://huggingface.co/facebook/bart-base
+- chatgpt api
+https://gitcode.net/mirrors/acheong08/ChatGPT?utm_source=csdn_github_accelerator
 @Notes:
-- BART shift_tokens_right
-Bart uses the eos_token_id as the starting token for decoder_input_ids generation.
-If past_key_values is used, optionally only the last decoder_input_ids have to be input (see past_key_values).
-For translation and summarization training, decoder_input_ids should be provided. If no decoder_input_ids is provided,
-the model will create this tensor by shifting the input_ids to the right for denoising pre-training following the paper.
-- label-smoothing
-During finetuning we use a label smoothed cross entropy loss (Pereyra et al., 2017), with the smoothing parameter
-set to 0.1.
-- model generate:
-in generation_utils.py e.g.BartForConditionalGeneration().generate -> def generate in generation_utils.py
-- torch.nn.CrossEntropyLoss
-    Shape:
-        - Input: :math:`(N, C)` where `C = number of classes`, or
-          :math:`(N, C, d_1, d_2, ..., d_K)` with :math:`K \geq 1`
-          in the case of `K`-dimensional loss.
-        - Target: If containing class indices, shape :math:`(N)` where each value is
-          :math:`0 \leq \text{targets}[i] \leq C-1`, or :math:`(N, d_1, d_2, ..., d_K)` with
-          :math:`K \geq 1` in the case of K-dimensional loss. If containing class probabilities,
-          same shape as the input.
+
 """
 
 import logging
