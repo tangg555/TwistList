@@ -62,18 +62,21 @@ def preprocess_tongue_twister_dataset(tgt_dir: Path, process_func=None, analyze_
         data_analyze(test_data)
         print(f"analyze total =============")
         data_analyze(data_list)
-    print(f"train: {len(train_data)}; val: {len(val_data)}; test: {len(test_data)}; ")
+    print(f"output_dir:{tgt_dir}: train: {len(train_data)}; val: {len(val_data)}; test: {len(test_data)}; ")
     output_dataset(data=train_data, prefix="train", output_dir=tgt_dir, process_func=process_func)
     output_dataset(data=val_data, prefix="val", output_dir=tgt_dir, process_func=process_func)
     output_dataset(data=test_data, prefix="test", output_dir=tgt_dir, process_func=process_func)
+
+def normalize_text(text: str):
+    return text.replace("\n", " ").strip()
 
 def process_raw_data_with_prompt(data: List[Dict]):
     src_txt_list = []
     tgt_txt_list = []
     for one in data:
         input_text = one["rake_keywords"]
-        src_txt_list.append(f'Generate tongue twisters about key words: {input_text}\n')
-        tgt_txt_list.append(f'{one["tt_text"]}\n')
+        src_txt_list.append(f'Generate tongue twisters about key words: {normalize_text(input_text)}\n')
+        tgt_txt_list.append(f'{normalize_text(one["tt_text"])}\n')
     assert len(src_txt_list) == len(tgt_txt_list)
     return src_txt_list, tgt_txt_list
 
@@ -82,14 +85,15 @@ def process_raw_data(data: List[Dict]):
     tgt_txt_list = []
     for one in data:
         input_text = one["rake_keywords"]
-        src_txt_list.append(f'{input_text}\n')
-        tgt_txt_list.append(f'{one["tt_text"]}\n')
+        src_txt_list.append(f'{normalize_text(input_text)}\n')
+        tgt_txt_list.append(f'{normalize_text(one["tt_text"])}\n')
     assert len(src_txt_list) == len(tgt_txt_list)
     return src_txt_list, tgt_txt_list
 
 def output_dataset(data, prefix, output_dir:Path, process_func=None):
     output_dir.mkdir(exist_ok=True)
     src_txt_list, tgt_txt_list = process_func(data)
+    assert len(src_txt_list) == len(tgt_txt_list)
     output_dir.joinpath(f"{prefix}.source.txt").open("w", encoding="utf-8").writelines(src_txt_list)
     output_dir.joinpath(f"{prefix}.target.txt").open("w", encoding="utf-8").writelines(tgt_txt_list)
 
