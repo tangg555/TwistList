@@ -26,7 +26,7 @@ from evaluate import load
 from g2p_en import G2p
 from tqdm import tqdm
 
-def compute_phonemes(predictions: List, references: List):
+def compute_phonemes(predictions: List, references: List, display=False):
     g2p = G2p()
     def parse_text_to_phonemes(text):
         phoneme_list = []
@@ -37,7 +37,9 @@ def compute_phonemes(predictions: List, references: List):
     assert len(predictions) == len(references)
     record = {"init_po_count": [],
               "po_count": []}
-    for pre_, ref_ in tqdm(list(zip(predictions, references)), desc="compute_phonemes"):
+
+    bar = zip(predictions, references) if not display else tqdm(list(zip(predictions, references)), desc="compute_phonemes")
+    for pre_, ref_ in bar:
         ref_phonemes = parse_text_to_phonemes(ref_)
         pre_phonemes = parse_text_to_phonemes(pre_)
         init_po_ref = set([one[0] for one in ref_phonemes])
