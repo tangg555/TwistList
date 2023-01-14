@@ -164,7 +164,6 @@ class MyGPT2(MyBart):
         tok = datetime.now()
         batch_gen_time = tok - tik
         #preds: List[str] = self.gen_ids_to_clean_text(generated_ids)
-        print(preds)
         targets: List[str] = self.gen_ids_to_clean_text(batch["tgt_ids"])
         source: List[str] = self.gen_ids_to_clean_text(batch["input_ids"])
         loss = self._step(batch)
