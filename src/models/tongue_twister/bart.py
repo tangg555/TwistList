@@ -188,7 +188,7 @@ class MyBart(BaseTransformer):
         base_metrics.update(**phoneme_metrics)
         bertscore_metrics: Dict = tt_eval_utils.compute_bert_score(predictions=preds, references=targets)
         base_metrics.update(**bertscore_metrics)
-        gen_len = np.mean([one.strip().split() for one in preds])
+        gen_len = np.mean([len(one.strip().split()) for one in preds])
         base_metrics["gen_len"] = gen_len
         base_metrics["ppl"] = round(np.exp(base_metrics["loss"]), 2)
 
