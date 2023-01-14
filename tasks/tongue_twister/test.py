@@ -21,10 +21,10 @@ from src.configuration.tongue_twister.config_args import parse_args_for_config
 from src.utils.file_utils import copy_file_or_dir, output_obj_to_file, pickle_save, pickle_load
 from src.utils import nlg_eval_utils
 from src.utils.tongue_twister import tt_eval_utils
-from train import MedDialogTrainer
+from train import TongueTwisterTrainer
 
 
-class MedDialogTester(MedDialogTrainer):
+class TongueTwisterTester(TongueTwisterTrainer):
     def __init__(self, args):
         # parameters
         super().__init__(args)
@@ -105,7 +105,7 @@ class MedDialogTester(MedDialogTrainer):
         metrics.update(**phoneme_metrics)
         bertscore_metrics = tt_eval_utils.compute_bert_score(predictions=preds, references=targets)
         metrics.update(**bertscore_metrics)
-        gen_len = np.mean(list(map(len, preds)))
+        gen_len = np.mean([one.strip().split() for one in preds])
         metrics["gen_len"] = gen_len
         metrics["ppl"] = round(np.exp(metrics["loss"]), 2)
         key = sorted(metrics.keys())
@@ -119,7 +119,7 @@ class MedDialogTester(MedDialogTrainer):
 
 if __name__ == '__main__':
     hparams = parse_args_for_config()
-    tester = MedDialogTester(hparams)
+    tester = TongueTwisterTester(hparams)
 
     # generate predicted stories
     tester.generate()

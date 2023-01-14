@@ -39,14 +39,14 @@ def add_customized_args(parser: argparse.ArgumentParser = None):
 
     parser.add_argument(
         "--max_source_length",
-        default=1024,
+        default=100,
         type=int,
         help="The maximum total input sequence length after tokenization. Sequences longer "
              "than this will be truncated, sequences shorter will be padded.",
     )
     parser.add_argument(
         "--max_target_length",
-        default=400,
+        default=150,
         type=int,
         help="The maximum total input sequence length after tokenization. Sequences longer "
              "than this will be truncated, sequences shorter will be padded.",

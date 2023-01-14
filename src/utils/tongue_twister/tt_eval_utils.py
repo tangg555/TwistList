@@ -60,16 +60,18 @@ def compute_phonemes(predictions: List, references: List, display=False):
         record["init_po_count"].append(init_po_count)
         record["po_count"].append(po_count)
 
-    metric_dict = {"init_po_count": np.mean(record["init_po_count"]),
-                    "po_count": np.mean(record["po_count"])}
+    metric_dict = {"init_po_count": round(np.mean(record["init_po_count"]), 2),
+                    "po_count": round(np.mean(record["po_count"]), 2)
+                   }
     return metric_dict
 
 def compute_bert_score(predictions: List, references: List):
     bertscore = load("bertscore")
     scores = bertscore.compute(predictions=predictions, references=references, lang="en")
-    metric_dict = {"bertscore_precision": np.mean(scores["precision"]),
-                   "bertscore_recall": np.mean(scores["recall"]),
-                   "bertscore_f1": np.mean(scores["f1"])}
+    metric_dict = {"bertscore_precision": round(np.mean(scores["precision"], 2)),
+                   "bertscore_recall": round(np.mean(scores["recall"]), 2),
+                   "bertscore_f1": round(np.mean(scores["f1"]), 2)
+                   }
     return metric_dict
 
 def compute_gpt_ppl(sentences: List[str]):

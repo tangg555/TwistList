@@ -29,7 +29,7 @@ from src.models.basic_pl_trainer import BasicPLTrainer
 from src.modules.pl_callbacks import Seq2SeqLoggingCallback, Seq2SeqCheckpointCallback
 
 
-class MedDialogTrainer(BasicPLTrainer):
+class TongueTwisterTrainer(BasicPLTrainer):
     def __init__(self, args, trainer_name="event-trigger-trainer"):
         # parameters
         super().__init__(args, trainer_name=trainer_name)
@@ -99,5 +99,5 @@ class MedDialogTrainer(BasicPLTrainer):
 
 if __name__ == '__main__':
     hparams = parse_args_for_config()
-    trainer = MedDialogTrainer(hparams)
+    trainer = TongueTwisterTrainer(hparams)
     trainer.train()

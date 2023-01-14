@@ -161,40 +161,15 @@ class MyBart(BaseTransformer):
     @torch.no_grad()
     def _generative_step(self, batch: dict, fast_generate=False) -> dict:
         tik = datetime.now()
-        if fast_generate:
-            generated_ids = self.model.generate(
+        generated_ids = self.model.generate(
                 batch["input_ids"],
                 attention_mask=batch["attention_mask"],
                 use_cache=True,
                 decoder_start_token_id=self.decoder_start_token_id,
-                num_beams=self.eval_beams,
                 max_length=self.hparams.max_target_length,
+                num_beams=self.eval_beams,
+                top_p=self.top_p if self.use_top_p else None,
             )
-        else:
-            generated_ids = self.model.generate(
-                    batch["input_ids"],
-                    attention_mask=batch["attention_mask"],
-                    use_cache=True,
-                    decoder_start_token_id=self.decoder_start_token_id,
-                    max_length=self.hparams.max_target_length,
-                    num_beams=self.eval_beams,
-                    top_p=self.top_p if self.use_top_p else None,
-                )
-        if self.outfile == 0:
-            outputs = self(batch['input_ids'], attention_mask=batch["attention_mask"], labels=batch['labels'],
-                           use_cache=False,
-                           output_attentions=True, output_hidden_states=True)
-            # for classification
-            cross_attentions = outputs["cross_attentions"]
-            cross_attentions = cross_attentions[0]
-            cross_attentions = torch.sum(cross_attentions,dim=1)
-            for j, emb in enumerate(batch['input_ids']):
-                for i in range(len(emb)):
-                    if emb[i] == self.tokenizer.convert_tokens_to_ids('[TERM]'):
-                        print(j, i)
-            cross_attentions = cross_attentions.cpu().numpy()
-            np.save('attention_vanilla.npy', cross_attentions)
-            self.outfile += 1
 
         tok = datetime.now()
         batch_gen_time = tok - tik
@@ -213,7 +188,7 @@ class MyBart(BaseTransformer):
         base_metrics.update(**phoneme_metrics)
         bertscore_metrics: Dict = tt_eval_utils.compute_bert_score(predictions=preds, references=targets)
         base_metrics.update(**bertscore_metrics)
-        gen_len = np.mean(list(map(len, preds)))
+        gen_len = np.mean([one.strip().split() for one in preds])
         base_metrics["gen_len"] = gen_len
         base_metrics["ppl"] = round(np.exp(base_metrics["loss"]), 2)
 
