@@ -67,7 +67,7 @@ def compute_bert_score(predictions: List, references: List):
     scores = bertscore.compute(predictions=predictions, references=references, lang="en")
     metric_dict = {"bertscore_precision": np.mean(scores["precision"]),
                    "bertscore_recall": np.mean(scores["recall"]),
-                   "bertscore_f1": np.mean(scores["f1"]),
+                   "bertscore_f1": np.mean(scores["f1"])}
     return metric_dict
 
 def compute_gpt_ppl(sentences: List[str]):
