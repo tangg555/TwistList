@@ -59,7 +59,7 @@ def compute_phonemes(predictions: List, references: List):
         record["po_count"].append(po_count)
 
     metric_dict = {"init_po_count": np.mean(record["init_po_count"]),
-            "po_count_mean": np.mean(record["po_count_mean"])}
+                    "po_count": np.mean(record["po_count"])}
     return metric_dict
 
 def compute_bert_score(predictions: List, references: List):
