@@ -113,7 +113,7 @@ def add_args_for_pytorch_lightning(parser: argparse.ArgumentParser = None):
     parser.add_argument("--weight_decay", default=0.0, type=float, help="Weight decay if we apply some.")
     parser.add_argument("--adam_epsilon", default=1e-8, type=float, help="Epsilon for Adam optimizer.")
     parser.add_argument("--warmup_steps", default=0, type=int, help="Linear warmup over warmup_steps.")
-    parser.add_argument("--num_workers", default=16, type=int, help="kwarg passed to DataLoader")
+    parser.add_argument("--num_workers", default=8, type=int, help="kwarg passed to DataLoader")
     parser.add_argument("--optimizer_class", type=str, default="AdamW", help="optimizers: Adafactor|AdamW")
 
     parser.add_argument("--seed", type=int, default=42, help="random seed for initialization")
