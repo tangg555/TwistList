@@ -27,6 +27,57 @@ from g2p_en import G2p
 from tqdm import tqdm
 from collections import Counter
 
+def compute_phonemes_similarity(predictions: List, references: List, display=False):
+    g2p = G2p()
+
+    def parse_text_to_phonemes(text):
+        phoneme_list = []
+        for word in text.strip().split():
+            phoneme_list.append(g2p(word))
+        return phoneme_list
+
+    record = {"init_po_count": [],
+              "po_count": [],
+              "ref_init_po_count": [],
+              "ref_po_count": [],
+    }
+
+    bar = list(zip(predictions, references)) if not display else tqdm(list(zip(predictions, references)), desc="compute_phonemes")
+    for pred, ref in bar:
+        pred_phonemes = parse_text_to_phonemes(pred)
+        ref_phonemes = parse_text_to_phonemes(ref)
+        init_po_counter = Counter()
+        po_count = Counter()
+        word_count = 0
+        for word_phonemes in pred_phonemes:
+            if len(word_phonemes) == 0:
+                continue
+            word_count += 1
+            init_po_counter[word_phonemes[0]] += 1
+            for po in word_phonemes:
+                po_count[po] += 1
+        record["init_po_count"].append(init_po_counter.most_common(1)[0][1] / word_count)
+        record["po_count"].append(po_count.most_common(1)[0][1] / word_count)
+
+        ref_init_po_counter = Counter()
+        ref_po_count = Counter()
+        word_count = 0
+        for word_phonemes in ref_phonemes:
+            if len(word_phonemes) == 0:
+                continue
+            word_count += 1
+            ref_init_po_counter[word_phonemes[0]] += 1
+            for po in word_phonemes:
+                ref_po_count[po] += 1
+        record["ref_init_po_count"].append(ref_init_po_counter.most_common(1)[0][1] / word_count)
+        record["ref_po_count"].append(ref_po_count.most_common(1)[0][1] / word_count)
+    init_po_count_sim = [(ref - np.abs(pre - ref))/ref for pre, ref in zip(record["init_po_count"], record["ref_init_po_count"])]
+    po_count_sim = [(ref - np.abs(pre - ref))/ref for pre, ref in zip(record["po_count"], record["ref_po_count"])]
+    metric_dict = {"init_po_count_sim": round(np.mean(init_po_count_sim), 4),
+                   "po_count_sim": round(np.mean(po_count_sim), 4)
+                   }
+    return metric_dict
+
 def compute_phonemes(predictions: List, display=False):
     g2p = G2p()
     def parse_text_to_phonemes(text):
@@ -56,7 +107,7 @@ def compute_phonemes(predictions: List, display=False):
         record["po_count"].append(po_count.most_common(1)[0][1]/word_count)
 
     metric_dict = {"init_po_count": round(np.mean(record["init_po_count"]), 4),
-                    "po_count": round(np.mean(record["po_count"]), 2)
+                    "po_count": round(np.mean(record["po_count"]), 4)
                    }
     return metric_dict
 

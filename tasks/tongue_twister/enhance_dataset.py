@@ -89,8 +89,27 @@ def run_bertopic():
     fig = model.visualize_topics()
     fig.write_html(src_dir.joinpath("topic_visual.html"))
 
+def rectify():
+    import re
+    src_dir = Path(f"{BASE_DIR}/resources/tongue_twister/raw-data")
+    origin_data = json.load(src_dir.joinpath("twister_dataset.json").open("r", encoding="utf-8"))
+    enhanced_data = json.load(src_dir.joinpath("enhanced_twister_dataset.json").open("r", encoding="utf-8"))
+    def _rect(data: dict):
+        for one in data:
+            result = re.findall(r"https://catalog.hathitrust.org/Record/(\d+)", one["source"])
+            if len(result) == 0:
+                continue
+            else:
+                one["source"] = one["source"].replace(result[0], "102715537")
+
+    _rect(origin_data)
+    save_json(origin_data, src_dir.joinpath("twister_dataset.json"))
+    _rect(enhanced_data)
+    save_json(enhanced_data, src_dir.joinpath("enhanced_twister_dataset.json"))
+
 
 
 if __name__ == '__main__':
     enhance_tt_dataset()
+    # rectify()
     # run_bertopic()
