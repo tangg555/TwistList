@@ -95,15 +95,11 @@ Currently we only have arxiv citation listed as follows:
 
 This is the arxiv citation:
 ```angular2
-@misc{https://doi.org/10.48550/arxiv.2210.15551,
-  doi = {10.48550/ARXIV.2210.15551},
-  url = {https://arxiv.org/abs/2210.15551},
-  author = {Tang, Chen and Zhang, Hongbo and Loakman, Tyler and Lin, Chenghua and Guerin, Frank},
-  keywords = {Computation and Language (cs.CL), FOS: Computer and information sciences, FOS: Computer and information sciences},
-  title = {Terminology-aware Medical Dialogue Generation},
-  publisher = {arXiv},
-  year = {2022},
-  copyright = {arXiv.org perpetual, non-exclusive license}
+@article{loakman2023phonetically,
+  title={Phonetically-Grounded Language Generation: The Case of Tongue Twisters},
+  author={Loakman, Tyler and Tang, Chen and Lin, Chenghua},
+  journal={arXiv preprint arXiv:2306.03457},
+  year={2023}
 }
 ```
 
