@@ -1,5 +1,5 @@
 # TwistList: Resources and Baselines For Tongue Twister Generation
-This repository is the code and resources for the paper [TwistList: Resources and Baselines For Tongue Twister Generation]() 
+This repository is the code and resources for the paper [TwistList: Resources and Baselines For Tongue Twister Generation](https://aclanthology.org/2023.acl-short.51.pdf) 
 
 ## Instructions
 
@@ -8,7 +8,7 @@ This project is mainly implemented with following tools:
 - [pytorch-lightning](https://www.pytorchlightning.ai/) framework
 - The initial checkpoints of pretrained models come from [Hugginface](https://huggingface.co).
 
-So if you want to run this code, you must have following preliminaries:
+So if you want to run this code, you must have the following preliminaries:
 - Python 3 or Anaconda (mine is 3.8)
 - [Pytorch](https://pytorch.org/) (mine is 1.11.0)
 - transformers (a package for [huggingface](https://huggingface.co/facebook/bart-base)) (mine is 4.21.3)
@@ -90,16 +90,21 @@ Revise the parameters according to your demand.
 Nothing is difficult. For technical details please refer to our paper.
 
 ## Citation
-If you found this repository or paper is helpful to you, please cite our paper. 
-Currently we only have arxiv citation listed as follows:
-
-This is the arxiv citation:
+If you found this repository or paper is helpful to you, please cite our paper.
 ```angular2
-@article{loakman2023phonetically,
-  title={Phonetically-Grounded Language Generation: The Case of Tongue Twisters},
-  author={Loakman, Tyler and Tang, Chen and Lin, Chenghua},
-  journal={arXiv preprint arXiv:2306.03457},
-  year={2023}
+@inproceedings{loakman-etal-2023-twistlist,
+    title = "{T}wist{L}ist: Resources and Baselines for Tongue Twister Generation",
+    author = "Loakman, Tyler  and
+      Tang, Chen  and
+      Lin, Chenghua",
+    booktitle = "Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers)",
+    month = jul,
+    year = "2023",
+    address = "Toronto, Canada",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2023.acl-short.51",
+    doi = "10.18653/v1/2023.acl-short.51",
+    pages = "579--589"
 }
 ```
 
